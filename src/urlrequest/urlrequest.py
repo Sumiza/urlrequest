@@ -40,8 +40,15 @@ class UrlRequest:
             urllib.request.install_opener(opener)
 
         if json: # json formatting and adding header
-            headers['Content-Type'] = 'application/json, charset=utf-8'
+            headers['Content-Type'] = 'application/json'
             data = jsonclass.dumps(json)
+
+        if isinstance(data,dict): # formatting dicts to urlencoded
+            headers['Content-Type'] = 'application/x-www-form-urlencoded'
+            output = ''
+            for key,value in data.items():
+                output = output + key + '=' + value + '&'
+            data = output
 
         if data: # data formatting
             data = data.encode('utf-8',errors='ignore')
