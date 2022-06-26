@@ -1,4 +1,6 @@
-
+"""
+    Tester script for all tests.
+"""
 
 from urlrequest import UrlRequest
 
@@ -13,6 +15,9 @@ if __name__ == '__main__':
     print(response.text)
 
     response = UrlRequest("https://httpbin.org/post",method="POST",json={"hello":"world"})
+    print(response.text)
+
+    response = UrlRequest("https://httpbin.org/post",method="POST",data={"hello":"world"})
     print(response.text)
 
     response = UrlRequest("https://httpbin.org/image/png")
