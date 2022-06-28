@@ -8,7 +8,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="urlrequest",
-    version="1.0.1",
+    version="1.0.2",
     author="Sumiza",
     author_email="sumiza@gmail.com",
     description="Wrapper for urllib.request.urlopen",
