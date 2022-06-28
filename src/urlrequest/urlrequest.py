@@ -3,6 +3,11 @@
     very limited drop-in replacement for requests when you cant import requests
     and need to use the built in urllib.request library
 """
+
+import urllib.request
+import urllib.error
+import json as jsonclass
+
 class UrlRequest:
     """
         urllib.request in a class to make it easier to use
@@ -14,16 +19,7 @@ class UrlRequest:
                 method:str = 'GET',
                 headers:dict = None,
                 timeout:float = 10,
-                auth:tuple = None,
-                raiseme = True # False to not raise exceptions
-                ):
-
-        # importing here to keep it all contained
-        # so can copy and paste this class into other scripts
-        # pylint: disable=import-outside-toplevel
-        import urllib.request
-        import urllib.error
-        import json as jsonclass
+                auth:tuple = None):
 
         if headers is None: # python quirk with default mutables
             headers = {}
@@ -31,7 +27,7 @@ class UrlRequest:
         # writes in a user agent if not there
         # default Python-urllib/X.X seems to be blocked by some
         if not headers.get('User-Agent'):
-            headers['User-Agent'] = 'UrlRequest v1.0.0'
+            headers['User-Agent'] = 'UrlRequest v1.0.2'
 
         if auth: # Basic Auth
             authhandle = urllib.request.HTTPPasswordMgrWithPriorAuth()
@@ -57,31 +53,30 @@ class UrlRequest:
 
         try:
             with urllib.request.urlopen(req, timeout=timeout) as request:
-                self.raw = request.read()
-                self.text = self.raw.decode('utf-8',errors='backslashreplace')
-                self.status_code = request.status
-                self.headers = dict(request.headers)
-                try:
-                    self.json = jsonclass.loads(self.text)
-                except jsonclass.JSONDecodeError:
-                    self.json = None
+                self._parseresponse(request)
 
         except urllib.error.HTTPError as exception:
-            self.text = exception.reason
-            self.status_code = exception.code
-            self.headers = dict(exception.headers)
-            self.json = {"Error":f'{exception.reason}'}
-            if raiseme:
-                raise exception
+            self._parseresponse(exception)
 
         # catches connection errors
         except urllib.error.URLError as exception:
             self.text = exception.reason
-            self.status_code = 483 # unused code
+            self.status_code = None
             self.headers = {}
-            self.json = {"Error":f'{exception.reason}'}
-            if raiseme:
-                raise exception
+            self.json = {"Error": exception.reason}
+
+    def _parseresponse(self,data):
+        self.raw = data.read()
+        self.text = self.raw.decode('utf-8',errors='backslashreplace')
+        self.status_code = data.status
+        self.headers = dict(data.headers)
+        self.json = self._ifjson()
+
+    def _ifjson(self):
+        try:
+            return jsonclass.loads(self.text)
+        except jsonclass.JSONDecodeError:
+            return None
 
     def __str__(self):
         return str(self.status_code)
