@@ -28,3 +28,6 @@ if __name__ == '__main__':
     # drop in for requests
     response = UrlRequest.get("https://httpbin.org/headers",headers={"hello":"world header test"})
     print(response.text)
+    # dont raise error
+    response = UrlRequest.get("https://ht00din.org/headers",headers={"hello":"world header test"},raiseme= False)
+    print(response.text)

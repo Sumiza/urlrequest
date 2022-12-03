@@ -19,7 +19,10 @@ class UrlRequest:
                 method:str = 'GET',
                 headers:dict = None,
                 timeout:float = 10,
-                auth:tuple = None):
+                auth:tuple = None,
+                callraise = True):
+
+        self.callraise = callraise
 
         if headers is None: # python quirk with default mutables
             headers = {}
@@ -27,7 +30,7 @@ class UrlRequest:
         # writes in a user agent if not there
         # default Python-urllib/X.X seems to be blocked by some
         if not headers.get('User-Agent'):
-            headers['User-Agent'] = 'UrlRequest v1.0.2'
+            headers['User-Agent'] = 'UrlRequest v1.0.3'
 
         if auth: # Basic Auth
             authhandle = urllib.request.HTTPPasswordMgrWithPriorAuth()
@@ -43,7 +46,7 @@ class UrlRequest:
             headers['Content-Type'] = 'application/x-www-form-urlencoded'
             output = ''
             for key,value in data.items():
-                output = output + key + '=' + value + '&'
+                output = output + key + '=' + str(value) + '&'
             data = output
 
         if data: # data formatting
@@ -60,23 +63,29 @@ class UrlRequest:
 
         # catches connection errors
         except urllib.error.URLError as exception:
-            self.text = exception.reason
+            if callraise:
+                raise exception
+            self.text = str(exception.reason)
             self.status_code = None
             self.headers = {}
-            self.json = {"Error": exception.reason}
 
-    def _parseresponse(self,data):
-        self.raw = data.read()
+    def _parseresponse(self,request):
+        self.raw = request.read()
         self.text = self.raw.decode('utf-8',errors='backslashreplace')
-        self.status_code = data.status
-        self.headers = dict(data.headers)
-        self.json = self._ifjson()
+        self.status_code = request.status
+        self.headers = dict(request.headers)
 
-    def _ifjson(self):
+    def json(self):
+        """
+            Returns the response in a dict format if possible
+            Returns None if can not be parsed and callraise is false
+        """
         try:
             return jsonclass.loads(self.text)
-        except jsonclass.JSONDecodeError:
-            return None
+        except jsonclass.JSONDecodeError as exception:
+            if self.callraise:
+                raise exception
+            return None        
 
     def __str__(self):
         return str(self.status_code)
