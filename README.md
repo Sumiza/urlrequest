@@ -6,7 +6,7 @@ Very limited drop-in replacement for requests when you cant import requests and 
 
 Supports (url,data,json,headers,timeout,auth)
 
-Optinal:
+Optional:
 Added (method) to be used in place to .post .get .etc takes:
 'POST','GET','PUT','DELETE','HEAD','PATCH'
 
