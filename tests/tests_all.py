@@ -29,5 +29,5 @@ if __name__ == '__main__':
     response = UrlRequest.get("https://httpbin.org/headers",headers={"hello":"world header test"})
     print(response.text)
     # dont raise error
-    response = UrlRequest.get("https://ht00din.org/headers",headers={"hello":"world header test"},raiseme= False)
+    response = UrlRequest.get("https://ht00din.org/headers",headers={"hello":"world header test"},callraise= False)
     print(response.text)
