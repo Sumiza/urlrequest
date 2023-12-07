@@ -8,7 +8,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="urlrequest",
-    version="1.0.3",
+    version="1.0.4",
     author="Sumiza",
     author_email="sumiza@gmail.com",
     description="Wrapper for urllib.request.urlopen",
@@ -21,6 +21,7 @@ setuptools.setup(
     classifiers=[
         'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: 3.10',
+        'Programming Language :: Python :: 3.11',
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
