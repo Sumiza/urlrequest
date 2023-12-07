@@ -48,6 +48,10 @@ class UrlRequest:
             for key,value in data.items():
                 output = output + key + '=' + str(value) + '&'
             data = output
+        
+        for key,value in headers.items(): # prevent sending of None types and such
+            if not isinstance(value,str):
+                headers[key] = str(value)
 
         if data: # data formatting
             data = data.encode('utf-8',errors='ignore')
